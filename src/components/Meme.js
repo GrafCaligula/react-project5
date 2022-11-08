@@ -1,10 +1,8 @@
 import React from "react";
-import memesData from "./memesData";
 
 export default function Meme() {
-  const [allMemeImages, setAllMemeImages] = React.useState(
-    memesData.data.memes
-  );
+  
+  const [allMemes, setAllMemes] = React.useState([]);
 
   const [meme, setMeme] = React.useState({
     topText: "",
@@ -12,23 +10,28 @@ export default function Meme() {
     randomImage: "",
   });
 
+  React.useEffect(() => {
+    fetch("https://api.imgflip.com/get_memes")
+      .then((res) => res.json())
+      .then((data) => setAllMemes(data.data.memes));
+  }, []);
+
   function getMemeImage() {
-    // const memesArray = allMemeImages.data.memes;
-    const randomIndex = Math.floor(Math.random() * allMemeImages.length);
+    const randomIndex = Math.floor(Math.random() * allMemes.length);
 
     setMeme((prevState) => ({
       ...prevState,
-      randomImage: allMemeImages[randomIndex].url,
+      randomImage: allMemes[randomIndex].url,
     }));
   }
 
   function handleChange(event) {
-    const {name, value} = event.target;
+    const { name, value } = event.target;
 
-    setMeme(prevMeme => ({
+    setMeme((prevMeme) => ({
       ...prevMeme,
       [name]: value,
-    }))
+    }));
   }
 
   return (
@@ -42,9 +45,9 @@ export default function Meme() {
           name="topText"
           value={meme.topText}
         />
-        <input 
-          type="text" 
-          className="form-input" 
+        <input
+          type="text"
+          className="form-input"
           placeholder="Bottom text"
           onChange={handleChange}
           name="bottomText"
